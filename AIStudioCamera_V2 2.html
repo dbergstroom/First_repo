@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101010">
+<title>AI Studio Camera</title>
+<style>
+:root{color-scheme:dark;--bg:#101010;--panel:#1b1b1b;--line:#303030;--muted:#a6a6a6;--orange:#f07828}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:680px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.brand{font-size:20px;font-weight:850;letter-spacing:.4px}.brand span{color:var(--orange)}.tag{font-size:10px;color:var(--orange);border:1px solid #713d20;padding:7px 9px;border-radius:30px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:16px;margin:13px 0}.heading{font-weight:750;margin-bottom:13px}
+.upload{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--orange);color:white;padding:15px;border-radius:13px;font-weight:750;cursor:pointer;text-align:center}
+input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.preview{margin-top:13px;min-height:230px;border-radius:13px;background:#111;border:1px dashed #454545;display:flex;align-items:center;justify-content:center;overflow:hidden;text-align:center;color:var(--muted);padding:14px}
+.preview img{display:none;max-width:100%;max-height:440px;object-fit:contain;border-radius:8px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:9px}.mode{background:#151515;border:1px solid var(--line);color:white;border-radius:12px;padding:13px;text-align:left;min-height:91px}.mode.active{border:2px solid var(--orange);background:#2b1c13}.emoji{font-size:23px}.mode b{display:block;margin:5px 0}.small{font-size:12px;color:var(--muted)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:13px 0 6px;font-size:14px}input[type=range]{width:100%;accent-color:var(--orange)}
+.switch{display:flex;justify-content:space-between;align-items:center;padding-top:14px;margin-top:10px;border-top:1px solid var(--line)}input[type=checkbox]{width:21px;height:21px;accent-color:var(--orange)}
+.actions{display:flex;gap:9px}.actions button{flex:1}.btn{border:1px solid var(--line);background:#202020;color:white;padding:12px;border-radius:12px;font-weight:700}.primary{background:var(--orange);border-color:var(--orange)}
+.note{font-size:12px;color:var(--muted);line-height:1.5}.status{font-size:12px;color:var(--muted);margin-top:9px;overflow-wrap:anywhere}
+button:focus-visible,label:focus-within{outline:2px solid #ffb17b;outline-offset:3px}
+</style>
+</head>
+<body>
+<main>
+<header><div class="brand">AI STUDIO <span>CAMERA</span><div class="small">PHOTO EDITOR · PROTOTYPE V2</div></div><div class="tag">IPHONE EDITION</div></header>
+<section class="panel">
+<div class="heading">01 — Importer une photo</div>
+<label class="upload" for="photo">＋ Choisir une photo dans Photos</label>
+<input id="photo" type="file" accept="image/*">
+<div class="preview" id="preview"><div id="placeholder"><div style="font-size:42px">📷</div><b>Ton aperçu apparaîtra ici</b><div class="small" style="margin-top:6px">Appuie sur le bouton orange pour choisir une image.</div></div><img id="image" alt="Photo sélectionnée"></div>
+<div class="status" id="filename">Aucune photo sélectionnée</div>
+</section>
+<section class="panel">
+<div class="heading">02 — Style de retouche</div>
+<div class="modes">
+<button class="mode active" data-mode="portrait"><span class="emoji">🧑</span><b>Portrait IA</b><span class="small">Lumière et peau naturelle</span></button>
+<button class="mode" data-mode="cinema"><span class="emoji">🎬</span><b>Cinématique Pro</b><span class="small">Ambiance cinéma</span></button>
+<button class="mode" data-mode="ultra"><span class="emoji">✨</span><b>Ultra HD</b><span class="small">Contraste et détails</span></button>
+<button class="mode" data-mode="studio"><span class="emoji">💡</span><b>Studio naturel</b><span class="small">Lumière équilibrée</span></button>
+</div>
+<div class="switch"><div><b>Identity Lock</b><div class="small">Privilégier la préservation du visage</div></div><input type="checkbox" id="identity" checked></div>
+</section>
+<section class="panel">
+<div class="heading">03 — Réglages de l'aperçu</div>
+<div class="row"><label for="intensity">Intensité</label><output id="intensityValue">50%</output></div><input id="intensity" type="range" min="0" max="100" value="50">
+<div class="row"><label for="warmth">Chaleur</label><output id="warmthValue">50%</output></div><input id="warmth" type="range" min="0" max="100" value="50">
+<div class="row"><label for="detail">Détails</label><output id="detailValue">50%</output></div><input id="detail" type="range" min="0" max="100" value="50">
+</section>
+<section class="panel">
+<div class="heading">04 — Aperçu avant / après</div>
+<div class="actions"><button class="btn" id="before">Avant</button><button class="btn" id="after">Après</button></div>
+<div class="status" id="result">Choisis une photo pour commencer.</div>
+<button class="btn primary" id="save" style="width:100%;margin-top:12px" disabled>Enregistrer l'aperçu</button>
+</section>
+<p class="note">Prototype local gratuit : cette version permet d'importer une photo et de tester un aperçu visuel. Elle n'utilise pas encore la retouche générative OpenAI. Identity Lock est une préférence d'édition, pas une garantie de conservation parfaite de l'identité.</p>
+</main>
+<script>
+(()=> {
+const $=id=>document.getElementById(id);let url=null,mode='portrait',edited=false,after=true;
+const modes={
+ portrait:(i,w,d)=>`contrast(${1+i*.0018}) saturate(${1+i*.0007}) brightness(${1+(w-50)*.0015})`,
+ cinema:(i,w,d)=>`contrast(${1+i*.002}) saturate(${.82+i*.0015}) sepia(${.08+i*.001}) brightness(${.98+(w-50)*.001})`,
+ ultra:(i,w,d)=>`contrast(${1+i*.0022}) saturate(${1+i*.0008}) brightness(1.02)`,
+ studio:(i,w,d)=>`contrast(${1+i*.001}) saturate(${.98+i*.0006}) brightness(${1+(w-50)*.0018})`
+};
+function update(){const img=$('image');if(!url)return;let i=+$('intensity').value,w=+$('warmth').value,d=+$('detail').value;let f=after&&edited?modes[mode](i,w,d):'none';img.style.filter=f;$('result').textContent=after&&edited?'Aperçu après retouche simulée':'Photo originale';$('save').disabled=!(after&&edited)}
+$('photo').addEventListener('change',e=>{let f=e.target.files&&e.target.files[0];if(!f)return;if(!f.type.startsWith('image/')){alert('Choisis un fichier image.');return}if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(f);$('image').src=url;$('image').style.display='block';$('placeholder').style.display='none';$('filename').textContent=f.name;edited=false;after=false;$('result').textContent='Photo importée. Choisis un style puis crée un aperçu.';update()});
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));update()}));
+['intensity','warmth','detail'].forEach(id=>$(id).addEventListener('input',()=>{$(id+'Value').textContent=$(id).value+'%';update()}));
+$('before').onclick=()=>{after=false;update()};$('after').onclick=()=>{after=true;edited=true;update()};
+$('save').onclick=()=>{if(!url)return;let img=$('image'),canvas=document.createElement('canvas'),w=img.naturalWidth,h=img.naturalHeight;if(!w||!h)return;let scale=Math.min(1,2400/Math.max(w,h));canvas.width=Math.round(w*scale);canvas.height=Math.round(h*scale);let ctx=canvas.getContext('2d');ctx.filter=img.style.filter||'none';ctx.drawImage(img,0,0,canvas.width,canvas.height);canvas.toBlob(blob=>{if(!blob)return;let a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download='AI-Studio-Camera-apercu.jpg';a.click();setTimeout(()=>URL.revokeObjectURL(u),1500)},'image/jpeg',.92)};
+})();
+</script>
+</body></html>
